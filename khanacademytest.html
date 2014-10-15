@@ -22,6 +22,7 @@ var Liquid = function(x, y, w, h, c) {
     this.h = h;
     this.c = c;
 };
+
   
 // Is the Mover in the Liquid?
 Liquid.prototype.contains = function(m) {
@@ -53,6 +54,31 @@ Liquid.prototype.display = function() {
     rect(this.x, this.y, this.w, this.h);
 };
 
+var Placements = function(x, y, w, h, color) {
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+    this.color = color;
+};
+
+Placements.prototype.display = function() {
+    noStroke();
+    if (this.color % 2 === 0) {
+        fill(255,255,255);
+    }
+    else {
+        fill(0,0,0);
+    }
+    rect(this.x, this.y, this.w, this.h);
+};
+
+var setPlacements = function(array) {
+    for (var index = 0; index < 12; index++) {
+        array[index] = new Placements(index * 50, 590, 50, 10, index);
+    }
+};
+
 var Person = function(x,y) {
     this.position = new PVector(x,y);
     this.velocity = new PVector(0,0);
@@ -60,6 +86,8 @@ var Person = function(x,y) {
 };
 
 Person.prototype.display = function() {
+    personX = this.position.x;
+    personY = this.position.y;
     stroke(0,0,0);
     strokeWeight(2);
     fill(123, 217, 176);
@@ -69,19 +97,40 @@ Person.prototype.display = function() {
 Person.prototype.update = function() {
     if (keyPressed) {
         if(key === 'a') {
-            this.position.x = 100;
+            this.position.x = 25;
         }
         else if(key === 's') {
-            this.position.x = 200;
+            this.position.x = 75;
         }
         else if (key === 'd') {
-            this.position.x = 300;
+            this.position.x = 125;
         }
         else if (key === 'f') {
-            this.position.x = 400;
+            this.position.x = 175;
         }
         else if (key === 'g') {
-            this.position.x = 500;
+            this.position.x = 225;
+        }
+        else if (key === 'h') {
+            this.position.x = 275;
+        }
+        else if (key === 'j') {
+            this.position.x = 325;
+        }
+        else if (key === 'k') {
+            this.position.x = 375;
+        }
+        else if (key === 'l') {
+            this.position.x = 425;
+        }
+        else if (key === ';') {
+            this.position.x = 475;
+        }
+        else if (key === 'z') {
+            this.position.x = 525;
+        }
+        else if (key === 'x') {
+            this.position.x = 575;
         }
     }
 }
@@ -125,18 +174,37 @@ Mover.prototype.checkEdges = function() {
     }
 };
 
+Mover.prototype.detectCollision = function(x, y) {
+    if( findDistanceBetween(this.position.x, x, this.position.y, y) < (this.mass * 8) + 25 ) {
+        console.log("collision!");
+    }
+};
+
+var findDistanceBetween = function(x1, x2, y1, y2) {
+    return Math.sqrt( Math.pow(x1 - x2, 2) + Math.pow(y1-y2, 2) );
+};
+
 // Moving bodies
 var movers = [];
 // Create liquid object
 var liquid = new Liquid(0, 0, 600, 600, 0.1);
+// Placements
+var placements = [];
 
-var personX = new Person(300,600);
+var person = new Person(300,600);
+var personX, personY = 0;
 
 void draw() {
     background(219, 253, 255);
   
     // Draw water
     liquid.display();
+
+    setPlacements(placements);
+
+    for (var index = 0; index < placements.length; index++) {
+        placements[index].display();
+    }
 
     for (var i = 0; i < movers.length; i++) {
     
@@ -156,9 +224,10 @@ void draw() {
         // Update and display
         movers[i].update();
         movers[i].display();
+        movers[i].detectCollision(personX, personY);
         // movers[i].checkEdges();
-        personX.update();
-        personX.display();
+        person.update();
+        person.display();
 
     }
   
