@@ -50,7 +50,18 @@ Liquid.prototype.calculateDrag = function(m) {
   
 Liquid.prototype.display = function() {
     noStroke();
-    fill(28, 120, 186);
+    var found = false;
+    for (var i = 0; i < 20; i++){
+        if (collision[i] === true) {
+            found = true
+        }
+    }
+    if (found === true) {
+        fill(208,40,40);
+    }
+    else {
+        fill(28, 120, 186);
+    }
     rect(this.x, this.y, this.w, this.h);
 };
 
@@ -90,7 +101,7 @@ Person.prototype.display = function() {
     personY = this.position.y;
     stroke(0,0,0);
     strokeWeight(2);
-    fill(123, 217, 176);
+    fill(140, 85, 142);
     ellipse(this.position.x,this.position.y,50,50);
 };
 
@@ -174,9 +185,19 @@ Mover.prototype.checkEdges = function() {
     }
 };
 
-Mover.prototype.detectCollision = function(x, y) {
+Mover.prototype.detectCollision = function(x, y, i) {
     if( findDistanceBetween(this.position.x, x, this.position.y, y) < (this.mass * 8) + 25 ) {
         console.log("collision!");
+        collision[i] = true;
+        // noStroke();
+        // fill(208,40,40);
+        // rect(0, 0, 600, 600);
+
+        // textSize(24);
+        // text("Collision!",250,300);
+    }
+    else {
+        collision[i] = false;
     }
 };
 
@@ -191,7 +212,12 @@ var liquid = new Liquid(0, 0, 600, 600, 0.1);
 // Placements
 var placements = [];
 
-var person = new Person(300,600);
+var collision = [];
+for (var i = 0; i < 20; i++) {
+    collision[i] = false;
+};
+
+var person = new Person(300,575);
 var personX, personY = 0;
 
 void draw() {
@@ -224,7 +250,7 @@ void draw() {
         // Update and display
         movers[i].update();
         movers[i].display();
-        movers[i].detectCollision(personX, personY);
+        movers[i].detectCollision(personX, personY, i);
         // movers[i].checkEdges();
         person.update();
         person.display();
@@ -232,7 +258,7 @@ void draw() {
     }
   
     fill(0, 0, 0);
-    text("click mouse to reset",10,30);
+    textSize(12);
 };
 
 
@@ -244,9 +270,7 @@ var resetMovers = function() {
 };
 
 // Not working???
-void mousePressed() {
-    resetMovers();
-};
+setInterval(function() {resetMovers()}, 40000); 
 
 resetMovers();
 
